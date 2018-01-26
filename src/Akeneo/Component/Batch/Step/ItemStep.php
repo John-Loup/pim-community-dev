@@ -62,6 +62,10 @@ class ItemStep extends AbstractStep
         $this->batchSize = $batchSize;
     }
 
+    public function getBatchSize()
+    {
+        return $this->batchSize;
+    }
     /**
      * Get reader
      *

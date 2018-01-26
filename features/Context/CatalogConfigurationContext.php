@@ -3,6 +3,7 @@
 namespace Context;
 
 use Akeneo\Bundle\ElasticsearchBundle\Client;
+use Akeneo\Component\Batch\Step\ItemStep;
 use Context\Loader\ReferenceDataLoader;
 use Doctrine\Common\DataFixtures\Event\Listener\ORMReferenceListener;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -61,6 +63,28 @@ class CatalogConfigurationContext extends PimContext
         $this->getMainContext()->getContainer()->get('pim_connector.doctrine.cache_clearer')->clear();
     }
 
+    /**
+     * @param int $batchSize
+     *
+     * @Given /^I change the mass edit batch size to "([^"]+)"$/
+     */
+    public function iChangeTheMassEditBatchSizeTo($batchSize)
+    {
+        $stepAddProductValue = new ItemStep(
+            'perform',
+            $this->getContainer()->get('event_dispatcher'),
+            $this->getContainer()->get('akeneo_batch.job_repository'),
+            $this->getContainer()->get('pim_enrich.reader.database.filtered_product_and_product_model'),
+            $this->getContainer()->get('pim_enrich.connector.processor.mass_edit.product.add_value'),
+            $this->getContainer()->get('pim_connector.writer.database.product'),
+            (int) $batchSize
+        );
+
+        $this->getContainer()->set('pim_enrich.step.add_product_value.mass_edit', $stepAddProductValue);
+
+        $toto = $this->getContainer()->get('pim_enrich.step.add_product_value.mass_edit');
+        var_dump($toto->getBatchSize());
+    }
 
     /**
      * @param string $entity
