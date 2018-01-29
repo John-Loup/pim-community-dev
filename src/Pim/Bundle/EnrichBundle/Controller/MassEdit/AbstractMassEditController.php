@@ -114,6 +114,7 @@ abstract class AbstractMassEditController
             'form'        => $form->createView(),
             'itemsCount'  => $itemsCount,
             'queryParams' => array_merge($queryParams, ['operationGroup' => $operationGroup]),
+            'productIds' => ''
         ]);
     }
 
@@ -140,14 +141,18 @@ abstract class AbstractMassEditController
         $itemsCount = $request->get('itemsCount');
         $configureTemplate = $this->getConfigureOperationTemplate($operationAlias);
 
+        $queryParams = $this->getQueryParams($request);
+        $productIds = $this->getProductIds($request);
+
         return $this->templating->renderResponse(
             $configureTemplate,
             [
                 'form'           => $form->createView(),
                 'operationAlias' => $operationAlias,
                 'operation'      => $operation,
-                'queryParams'    => $this->getQueryParams($request),
+                'queryParams'    => $queryParams,
                 'itemsCount'     => $itemsCount,
+                'productIds'     => $productIds,
             ]
         );
     }
@@ -211,7 +216,7 @@ abstract class AbstractMassEditController
                 'form'           => $form->createView(),
                 'operationAlias' => $operationAlias,
                 'itemsCount'     => $itemsCount,
-                'queryParams'    => $queryParams
+                'queryParams'    => $queryParams,
             ]
         );
     }
@@ -232,7 +237,6 @@ abstract class AbstractMassEditController
         $params = array_merge($params, [
             'gridName'       => $request->get('gridName'),
             'actionName'     => $request->get('actionName'),
-            'values'         => implode(',', $params['values']),
             'filters'        => json_encode($params['filters']),
             'dataLocale'     => $request->get('dataLocale', null),
             'itemsCount'     => $request->get('itemsCount'),
@@ -240,6 +244,22 @@ abstract class AbstractMassEditController
         ]);
 
         return $params;
+    }
+
+    /**
+     * Get the selected product Ids from the request parameters
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getProductIds(Request $request)
+    {
+        $params = $this
+            ->parametersParser
+            ->parse($request);
+
+        return $params['values'];
     }
 
     /**

@@ -36,6 +36,8 @@
             </div>
         </div>
 
+        <input type="hidden" name="productIds" value="{{ productIds|join(',') }}" />
+
         <div class="row span12 offset1 buffer-top configuration">
             {{ elements.link('btn.back', path(backButtonRoute, queryParams), {'class': 'btn-cancel', 'icon': 'chevron-left'}) }}
             {{ elements.link('btn.next', null, {'class': ['next btn-next', 'btn-primary'], 'icon': 'chevron-right'}) }}
